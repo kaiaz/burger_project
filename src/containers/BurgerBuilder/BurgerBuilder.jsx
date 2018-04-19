@@ -27,6 +27,7 @@ class BurgerBuilder extends Component {
     };
 
     componentDidMount() {
+        console.log(this.props);
         axios.get('https://reactburgerbuilder-de9fc.firebaseio.com/ingredients.json')
             .then( response => {
                 this.setState({ingredients: response.data});
@@ -99,31 +100,17 @@ class BurgerBuilder extends Component {
     };
 
     purchaseContinueHandler = () =>  {
-        this.setState({ loading: true});
-       // alert('Your order is done!');
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: 'Kai',
-                address: {
-                    street: 'Elm street',
-                    zipCode: '122436',
-                    country: 'Kyrgystan'
-                },
-                email: 'test777@gmail.com',
-                deliveryMethod: 'fastest'
-            }
+        const queryParams = [];
+        for( let i in this.state.ingredients) {
+            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]))
+        }
+        queryParams.push('price=' + this.state.totalPrice);
+        const queryString = queryParams.join('&');
 
-        };
-        axios.post('/orders.json', order)
-            .then(response => {
-                this.setState({ loading: false, purchasing: false })
-                })
-            .catch(error => {
-                this.setState({ loading: false, purchasing: false })
-            });
-
+        this.props.history.push({
+            pathname: '/checkout',
+            search: '?' + queryString
+        });
     };
 
     render() {
@@ -138,7 +125,7 @@ class BurgerBuilder extends Component {
         let orderSummary = null;
 
 
-        let burger = this.state.error ? <p>Indredients can't be loaded</p> : <Spinner/>;
+        let burger = this.state.error ? <p>Ingredients can't be loaded</p> : <Spinner/>;
 
         if (this.state.ingredients) {
             burger = (
