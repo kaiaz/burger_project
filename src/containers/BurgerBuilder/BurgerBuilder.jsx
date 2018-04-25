@@ -160,7 +160,6 @@ class BurgerBuilder extends Component {
                     modalClosed={this.purchaseCancelHandler}
                 >
                     {orderSummary}
-
                 </Modal>
                 {burger}
 
